@@ -2,10 +2,10 @@
 #include <QTextStream>
 #include "client.h"
 #include "server.h"
+
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-
     qDebug()<< "1.Server\n 2. Client";
     QTextStream qtin(stdin);
     QString line = qtin.readLine();
@@ -20,13 +20,16 @@ int main(int argc, char *argv[])
          for(int i = 0; i < line.toInt(); i++){
             server.socket->waitForReadyRead();
             server.send_init(i+1);
+            server.add_client(i);
          }
-
+         QByteArray Data = server.make_token_from_ui();
+         qDebug()<<"whoIsSendig"<<server.whoIsSendig;
+         server.send(Data, server.whoIsSendig);
     }else
     {
          Client client;
-         client.send();
-         client.socket->waitForReadyRead();
+         client.send_init() ;
+
 
     }
     return a.exec();

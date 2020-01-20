@@ -22,6 +22,7 @@ public:
     QByteArray make_token_from_ui();
     QByteArray make_token(int salje, int prima, QString poruka);
     void ispisi_token(struct Token tok);
+    QString ipAddres = "127.0.0.1";
 
 signals:
 

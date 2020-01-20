@@ -15,15 +15,18 @@ private:
     int myInitPort;
     int serverPort;
     int nubmerOfClients;
+    int br;
 
 
 public:
     explicit Client(QObject *parent = nullptr);
     QStringList split_msg(QByteArray Buffer);
     QUdpSocket *socket;
+    QUdpSocket *socket2;
     void processing_init_msg(QStringList lista);
     void processing_msg(QByteArray Buffer);
     void print_token(struct Token tok);
+    QString ipAddres = "127.0.0.1";
 
 
 

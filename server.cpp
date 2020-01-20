@@ -5,7 +5,7 @@ Server::Server(QObject *parent) : QObject(parent)
     myPort = 1233;
     clientPortInit = 1234;
     socket = new QUdpSocket(this);
-    if (!socket->bind(QHostAddress("192.168.56.1"), myPort)) {
+    if (!socket->bind(QHostAddress(ipAddres), myPort)) {
         qDebug("Server bind failed.");
     } else {
         qDebug("Server bind done.");
@@ -15,7 +15,7 @@ Server::Server(QObject *parent) : QObject(parent)
 
 void Server::send_init(int id){
     QByteArray Data = make_init_msg(id);
-    if (socket->writeDatagram(Data, QHostAddress("192.168.56.1"),   clientPortInit) <= 0)
+    if (socket->writeDatagram(Data, QHostAddress(ipAddres),   clientPortInit) <= 0)
     {
         qDebug("Did not send data");
     }else{
@@ -27,7 +27,7 @@ void Server::send_init(int id){
 void Server::send(QByteArray Data, int send_to_port){
 
 
-    if (socket->writeDatagram(Data, QHostAddress("192.168.56.1"),   send_to_port) <= 0)
+    if (socket->writeDatagram(Data, QHostAddress(ipAddres),   send_to_port) <= 0)
     {
         qDebug("Did not send data");
     }else{
@@ -84,7 +84,7 @@ QByteArray Server::make_token(int salje, int prima, QString poruka)
     qDebug()<<"napravljen token";
     this->ispisi_token(tok);
     QByteArray Data;
-
+    whoIsSendig = clients[salje].assigned_port;
     Data.append(qUtf8Printable(tok.poruka));
     Data.append(":");
     Data.append(qUtf8Printable(tok.dest_addr));
@@ -114,7 +114,7 @@ QByteArray Server::make_token_from_ui()
     QTextStream qtin(stdin);
     QString line = qtin.readLine();
     salje = line.toInt();
-
+    qDebug()<< "clients["<<salje<<"].assigned_port = "<< clients[salje].assigned_port;
     this->whoIsSendig = clients[salje].assigned_port;
 
     qDebug()<<"Ko prima token? "<<client_number;

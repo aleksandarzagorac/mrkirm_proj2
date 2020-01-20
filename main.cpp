@@ -6,7 +6,8 @@
 int main(int argc, char *argv[])
 {
     QCoreApplication a(argc, argv);
-    qDebug()<< "1.Server\n 2. Client";
+    qDebug()<<"1.Server";
+    qDebug()<<"2.Client";
     QTextStream qtin(stdin);
     QString line = qtin.readLine();
 
@@ -18,9 +19,10 @@ int main(int argc, char *argv[])
          line = qtin.readLine();
          server.client_number = line.toInt();
          for(int i = 0; i < line.toInt(); i++){
+            qDebug()<<"Report client"<< i+1;
             server.socket->waitForReadyRead();
             server.send_init(i+1);
-            server.add_client(i);
+            server.add_client(i+1);
          }
          QByteArray Data = server.make_token_from_ui();
          qDebug()<<"whoIsSendig"<<server.whoIsSendig;
@@ -29,6 +31,8 @@ int main(int argc, char *argv[])
     {
          Client client;
          client.send_init() ;
+
+
 
 
     }

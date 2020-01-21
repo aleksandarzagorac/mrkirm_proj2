@@ -27,6 +27,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 HEADERS += \
     client.h \
     clients_str.h \
+    inc.h \
     initial_str.h \
     server.h \
     token.h

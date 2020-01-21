@@ -16,7 +16,7 @@ Client::Client(QObject *parent) : QObject(parent)
 void Client::SendInit(){
     QByteArray Data;
     Data.append("initial");
-    if (socket->writeDatagram(Data, QHostAddress(IPADDRESS), quint16(SERVER_PORT)) <= 0)
+    if (socket->writeDatagram(Data, QHostAddress(IPADDRESS), quint16(SERVERPORT)) <= 0)
     {
         qDebug("Did not send data");
     }else{

@@ -2,20 +2,19 @@
 
 Server::Server(QObject *parent) : QObject(parent)
 {
-    myPort = 1233;
-    clientPortInit = 1234;
+    myPort = SERVERPORT;
     socket = new QUdpSocket(this);
-    if (!socket->bind(QHostAddress(ipAddres), myPort)) {
+    if (!socket->bind(QHostAddress(IPADDRESS), SERVERPORT)) {
         qDebug("Server bind failed.");
     } else {
         qDebug("Server bind done.");
     }
-    connect(socket, SIGNAL(readyRead()), this, SLOT(recv()));
+    connect(socket, SIGNAL(readyRead()), this, SLOT(Recv()));
 }
 
-void Server::send_init(int id){
-    QByteArray Data = make_init_msg(id);
-    if (socket->writeDatagram(Data, QHostAddress(ipAddres),   clientPortInit) <= 0)
+void Server::SendInit(int id){
+    QByteArray Data = MakeInitMsg(id);
+    if (socket->writeDatagram(Data, QHostAddress(IPADDRESS),   CLIENTINITPORT) <= 0)
     {
         qDebug("Did not send data");
     }else{
@@ -24,19 +23,19 @@ void Server::send_init(int id){
 
 }
 
-void Server::send(QByteArray Data, int send_to_port){
+void Server::Send(QByteArray Data, int sendToPort){
 
 
-    if (socket->writeDatagram(Data, QHostAddress(ipAddres),   send_to_port) <= 0)
+    if (socket->writeDatagram(Data, QHostAddress(IPADDRESS),   sendToPort) <= 0)
     {
         qDebug("Did not send data");
     }else{
-        qDebug()<<"Poruka poslata od servera";
+        qDebug()<<"Poruka poslata od servera na port"<<sendToPort;
     }
 
 }
 
-void Server::recv(){
+void Server::Recv(){
     QByteArray Buffer;
     Buffer.resize(socket->pendingDatagramSize());
 
@@ -49,30 +48,30 @@ void Server::recv(){
     qDebug()<<"Message: "<< Buffer;
 
 }
-QByteArray Server::make_init_msg(int id)
+QByteArray Server::MakeInitMsg(int id)
 {
     QByteArray Data;
     QString s = QString::number(id);
     Data.append(s);
     Data.append(":");
-    s = QString::number(clientPortInit + id);
+    s = QString::number(CLIENTINITPORT + id);
     Data.append(s);
     Data.append(":");
     Data.append("initial");
     Data.append(":");
-    s = QString::number(client_number);
+    s = QString::number(clientNumber);
     Data.append(s);
 
     return Data;
 }
 
-void Server::add_client(int id)
+void Server::AddClient(int id)
 {
     clients[id].id = id;
-    clients[id].assigned_port = clientPortInit + id;
+    clients[id].assignedPort = CLIENTINITPORT + id;
 }
 
-QByteArray Server::make_token(int salje, int prima, QString poruka)
+QByteArray Server::MakeToken(int salje, int prima, QString poruka)
 {
     struct Token tok;
 
@@ -82,9 +81,9 @@ QByteArray Server::make_token(int salje, int prima, QString poruka)
     tok.dest_addr = s;
     tok.poruka = poruka;
     qDebug()<<"napravljen token";
-    this->ispisi_token(tok);
+    this->PrintToken(tok);
     QByteArray Data;
-    whoIsSendig = clients[salje].assigned_port;
+    whoIsSendig = clients[salje].assignedPort;
     Data.append(qUtf8Printable(tok.poruka));
     Data.append(":");
     Data.append(qUtf8Printable(tok.dest_addr));
@@ -96,7 +95,7 @@ QByteArray Server::make_token(int salje, int prima, QString poruka)
     return Data;
 }
 
-void Server::ispisi_token(struct Token tok)
+void Server::PrintToken(struct Token tok)
 {
     qDebug()<<tok.poruka;
     qDebug()<<tok.dest_addr;
@@ -106,24 +105,24 @@ void Server::ispisi_token(struct Token tok)
 }
 
 
-QByteArray Server::make_token_from_ui()
+QByteArray Server::MakeTokenFromUI()
 {
     int salje,prima;
     QString poruka;
-    qDebug()<<"Odakle krece token? 1-"<<client_number;
+    qDebug()<<"Odakle krece token? 1-"<<clientNumber;
     QTextStream qtin(stdin);
     QString line = qtin.readLine();
     salje = line.toInt();
-    qDebug()<< "clients["<<salje<<"].assigned_port = "<< clients[salje].assigned_port;
-    this->whoIsSendig = clients[salje].assigned_port;
+    qDebug()<< "clients["<<salje<<"].assigned_port = "<< clients[salje].assignedPort;
+    this->whoIsSendig = clients[salje].assignedPort;
 
-    qDebug()<<"Ko prima token? "<<client_number;
+    qDebug()<<"Ko prima token? "<<clientNumber;
     line = qtin.readLine();
     prima = line.toInt();
     qDebug()<<"Sta je poruka?";
     line = qtin.readLine();
     poruka = line;
-    return make_token(salje, prima, poruka);
+    return MakeToken(salje, prima, poruka);
 
 }
 

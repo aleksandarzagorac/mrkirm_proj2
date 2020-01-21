@@ -4,6 +4,9 @@
 #include <QObject>
 #include <QUdpSocket>
 #include "token.h"
+#include "inc.h"
+#include <QCoreApplication>
+#include <QTime>
 
 class Client : public QObject
 {
@@ -12,28 +15,25 @@ class Client : public QObject
 private:
     int myId;
     int myPort;
-    int myInitPort;
-    int serverPort;
     int nubmerOfClients;
     int br;
 
 
 public:
     explicit Client(QObject *parent = nullptr);
-    QStringList split_msg(QByteArray Buffer);
+    QStringList SplitMsg(QByteArray Buffer);
     QUdpSocket *socket;
     QUdpSocket *socket2;
-    void processing_init_msg(QStringList lista);
-    void processing_msg(QByteArray Buffer);
-    void print_token(struct Token tok);
-    QString ipAddres = "127.0.0.1";
-
+    void ProcessingInitMsg(QStringList lista);
+    void ProcessingMsg(QByteArray Buffer);
+    void Delay(int);
+    void Send(QByteArray, int);
+    void SendInit();
 
 
 public slots:
-    void send();
-    void send_init();
-    void recv();
+
+    void Recv();
 
 };
 

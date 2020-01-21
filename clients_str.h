@@ -3,7 +3,7 @@
 
 struct Clients_str{
     int id;
-    int assigned_port;
+    int assignedPort;
 };
 
 
